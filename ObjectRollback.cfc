@@ -1,10 +1,10 @@
 <cfcomponent output="false" mixin="model">
 
 	<cffunction name="init">
-		<cfset this.version = "1.1.3,1.1.8">
+		<cfset this.version = "1.1.3,1.1.8,1.4.5">
 		<cfreturn this>
 	</cffunction>
-	
+
 	<cffunction name="nestedProperties" output="false" access="public" returntype="void">
 		<cfargument name="association" type="string" required="false" default="" hint="The association (or list of associations) you want to allow to be set through the params. This argument is also aliased as `associations`." />
 		<cfargument name="autoSave" type="boolean" required="false" hint="Whether to save the association(s) when the parent object is saved." />
@@ -39,7 +39,7 @@
 			}
 		</cfscript>
 	</cffunction>
-	
+
 	<cffunction name="persistedOnInitialization" access="public" output="false" returntype="boolean">
 		<cfscript>
 			if (StructKeyExists(variables.wheels.instance, "persistedOnInitialization") && variables.wheels.instance.persistedOnInitialization)
@@ -47,7 +47,7 @@
 		</cfscript>
 		<cfreturn false />
 	</cffunction>
-	
+
 	<cffunction name="setPersistedOnInitialization" access="public" output="false" returntype="void">
 		<cfargument name="persisted" type="boolean" required="true" />
 		<cfset variables.wheels.instance.persistedOnInitialization = arguments.persisted />
@@ -57,12 +57,12 @@
 		<cfargument name="primaryKeys" type="string" required="false" />
 		<cfscript>
 			var loc = {};
-			
+
 			if (persistedOnInitialization())
 				return;
-			
+
 			arguments.primaryKeys = (Len(arguments.primaryKeys)) ? arguments.primaryKeys : this.primaryKeys();
-			
+
 			// remove the persisted properties container
 			StructDelete(variables, "$persistedProperties", false);
 			// remove any primary keys set by the save
@@ -70,7 +70,7 @@
 				StructDelete(this, loc.item, false);
 		</cfscript>
 	</cffunction>
-	
+
 	<cffunction name="$saveAssociations" returntype="boolean" access="public" output="false">
 		<cfargument name="parameterize" type="any" required="true" />
 		<cfargument name="reload" type="boolean" required="true" />
@@ -80,13 +80,13 @@
 			var loc = {};
 			var coreSaveAssociations = core.$saveAssociations;
 			loc.returnValue = coreSaveAssociations(argumentCollection=arguments);
-			
+
 			// if the associations were not saved correctly, roll them back to their new state but keep the errors
 			if (!loc.returnValue) $resetAssociationsToNew();
 		</cfscript>
 		<cfreturn loc.returnValue />
 	</cffunction>
-	
+
 	<cffunction name="$resetAssociationsToNew" returntype="void" access="public" output="false">
 		<cfscript>
 			var loc = {};
@@ -96,10 +96,10 @@
 				if (loc.associations[loc.association].nested.allow && loc.associations[loc.association].nested.autoSave && StructKeyExists(this, loc.association))
 				{
 					loc.array = this[loc.association];
-	
+
 					if (IsObject(this[loc.association]))
 						loc.array = [ this[loc.association] ];
-	
+
 					if (IsArray(loc.array))
 						for (loc.i = 1; loc.i lte ArrayLen(loc.array); loc.i++)
 							loc.array[loc.i].$resetToNew(primaryKeys=loc.associations[loc.association].nested.rollbackKeys);
@@ -107,7 +107,7 @@
 			}
 		</cfscript>
 	</cffunction>
-	
+
 	<cffunction name="$createInstance" returntype="any" access="public" output="false">
 		<cfargument name="properties" type="struct" required="true">
 		<cfargument name="persisted" type="boolean" required="true">
@@ -121,6 +121,6 @@
 			loc.returnValue.setPersistedOnInitialization(arguments.persisted);
 		</cfscript>
 		<cfreturn loc.returnValue />
-	</cffunction>	
+	</cffunction>
 
 </cfcomponent>
