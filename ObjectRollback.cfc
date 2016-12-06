@@ -1,7 +1,7 @@
 <cfcomponent output="false" mixin="model">
 
 	<cffunction name="init">
-		<cfset this.version = "1.1.3,1.1.8,1.4.5">
+		<cfset this.version = "1.1.3,1.1.8,1.4.5,2.0">
 		<cfreturn this>
 	</cffunction>
 
